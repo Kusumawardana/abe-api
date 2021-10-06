@@ -7,6 +7,7 @@ use App\Models\perbedaan;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use Faker\Factory as Faker;
 
 class perbedaans extends BaseController
 {
@@ -55,6 +56,49 @@ class perbedaans extends BaseController
                 'data' => $read
             ];
             return $data;
+        }else{
+            $data = [
+                'status' => 'Error',
+                'message' => 'Akun Belum Login',
+                'data' => ''
+            ];
+            return $data;
+        }
+    }
+    public function getComparison($perbedaanId, $id)
+    {
+        $validation = auth::where('id_user',$id)->count(); //ngikutin yg diatas, entah kenapa buat kyk gini authnya .-.)?
+        $mustGetSameId = Faker::create()->boolean();
+        if ($validation >= 1){
+            if($mustGetSameId) {
+                $comparison = perbedaan::where('id', $perbedaanId)->first();
+            } else {
+                $comparison = perbedaan::where('id', '!=', $perbedaanId)->inRandomOrder->first();
+            }
+            $$comparison['attachment1'] = 'http://abe.intiru.com/UploadedFile/perbedaan/'.$$comparison['attachment1'];
+            $$comparison['attachment2'] = 'http://abe.intiru.com/UploadedFile/perbedaan/'.$$comparison['attachment2'];
+
+            $data = [
+                'status' => 'Success',
+                'message' => 'Data Dapat Di Akses',
+                'data' => $comparison
+            ];
+            return $data;
+        }else{
+            $data = [
+                'status' => 'Error',
+                'message' => 'Akun Belum Login',
+                'data' => ''
+            ];
+            return $data;
+        }
+    }
+
+    public function notifyAnswer($perbedaanId, $comparisonId, $id)
+    {
+        $validation = auth::where('id_user',$id)->count();
+        if ($validation >= 1){
+            //notif disini
         }else{
             $data = [
                 'status' => 'Error',

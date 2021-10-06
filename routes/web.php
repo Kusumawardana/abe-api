@@ -51,6 +51,8 @@ $router->get('/dibagikan/readpenerima/{id}', 'dibagikans@readpenerima');
 $router->get('/dibagikan/readpengirim/{id}', 'dibagikans@readpengirim');
 $router->get('/perbedaan/readadmin/{id}', 'perbedaans@readadmin');
 $router->get('/perbedaan/myread/{id}', 'perbedaans@myread');
+$router->get('/perbedaan/comparison/{perbedaanId}/{id}', 'perbedaans@getComparison');
+$router->post('/perbedaan/notify/{perbedaanId}/{comparisonId}/{id}', 'perbedaans@notifyAnswer');
 
 
 
