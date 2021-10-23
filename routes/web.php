@@ -54,7 +54,8 @@ $router->get('/perbedaan/myread/{id}', 'perbedaans@myread');
 $router->get('/perbedaan/comparison/{perbedaanId}/{id}', 'perbedaans@getComparison');
 $router->post('/perbedaan/notify/{perbedaanId}/{comparisonId}/{id}', 'perbedaans@notifyAnswer');
 
-
+$router->get('/notifikasi/{id}', 'NotificationController@index');
+$router->patch('/notifikasi/{notification}/{id}', 'NotificationController@update');
 
 $router->post('/feedback/create', 'feedbacks@create');
 $router->post('/dibagikan/create', 'dibagikans@create');
