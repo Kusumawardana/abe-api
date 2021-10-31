@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\auth;
-use App\Models\perkembangan;
-use App\Models\Pengguna;
-use App\Models\memilikiorangtua;
 use App\Models\anak;
+use App\Models\auth;
+use App\Models\Notification;
+use App\Models\perkembangan;
+use App\Models\terapis;
+use App\Services\SendOneSignalNotification;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class perkembangans extends BaseController
 {
 
-    public function readanak($from,$to,$id,$anak)
+    public function readanak($from, $to, $id, $anak)
     {
-        $validation = auth::where('id_user',$id)->count();
+        $validation = auth::where('id_user', $id)->count();
 
         if ($validation >= 1) {
             $read = perkembangan::
                 with('anak:id,nama_anak')
-                ->whereHas('anak', function ($query) use($anak){
+                ->whereHas('anak', function ($query) use ($anak) {
                     $query->where('id', $anak);
                 })
                 ->with('terapis:id,nama_terapis')
@@ -31,26 +32,26 @@ class perkembangans extends BaseController
             $data = [
                 'status' => 'Success',
                 'message' => 'Data Dapat Di Akses',
-                'data' => $read
+                'data' => $read,
             ];
             return $data;
-        }else {
+        } else {
             $data = [
                 'status' => 'Error',
                 'message' => 'Akun Belum Login',
-                'data' => ''
+                'data' => '',
             ];
             return $data;
         }
     }
-    public function readanaksearch($from,$to,$id,$anak,$search)
+    public function readanaksearch($from, $to, $id, $anak, $search)
     {
-        $validation = auth::where('id_user',$id)->count();
+        $validation = auth::where('id_user', $id)->count();
 
         if ($validation >= 1) {
-            $read = perkembangan::where('judul','LIKE',$search.'%')
+            $read = perkembangan::where('judul', 'LIKE', $search . '%')
                 ->with('anak:id,nama_anak')
-                ->whereHas('anak', function ($query) use($anak){
+                ->whereHas('anak', function ($query) use ($anak) {
                     $query->where('id', $anak);
                 })
                 ->with('terapis:id,nama_terapis')
@@ -58,48 +59,61 @@ class perkembangans extends BaseController
             $data = [
                 'status' => 'Success',
                 'message' => 'Data Dapat Di Akses',
-                'data' => $read
+                'data' => $read,
             ];
             return $data;
-        }else {
+        } else {
             $data = [
                 'status' => 'Error',
                 'message' => 'Akun Belum Login',
-                'data' => ''
+                'data' => '',
             ];
             return $data;
         }
     }
-    public function create(Request $req){
+    public function create(Request $req)
+    {
         $judul = $req->judul;
         $deskripsi = $req->deskripsi;
         $id_terapis = $req->id_terapis;
         $id_anak = $req->id_anak;
 
-        if (isset($judul) || isset($deskripsi)){
+        if (isset($judul) || isset($deskripsi)) {
             $perkembangan = new perkembangan;
             $perkembangan->judul = $judul;
             $perkembangan->deskripsi = $deskripsi;
             $perkembangan->id_terapis = $id_terapis;
             $perkembangan->id_anak = $id_anak;
             $perkembangan->save();
+
+            $anak = anak::find($id_anak);
+            $terapis = terapis::find($id_terapis);
+
+            $notif = Notification::create([
+                'judul' => 'Laporan perkembangan anak',
+                'deskripsi' => "Laporan {$anak->nama_anak} oleh {$terapis->nama_terapis}. {$deskripsi}",
+            ]);
+
+            SendOneSignalNotification::send($notif->judul, $notif->deskripsi);
+
             $data = [
                 'status' => 'Success',
                 'message' => 'Laporan Perkembangan Telah Terkirim',
-                'data' => ''
+                'data' => '',
             ];
             return $data;
-        }else{
+        } else {
             $data = [
                 'status' => 'Error',
                 'message' => 'Harap Lengkapi kolom judul atau deskripsi untuk mengajukan keluhan',
-                'data' => ''
+                'data' => '',
             ];
             return $data;
         }
     }
-    public function delete($id,$item){
-        $validation = auth::where('id_user',$id)->count();
+    public function delete($id, $item)
+    {
+        $validation = auth::where('id_user', $id)->count();
 
         if ($validation >= 1) {
             $perkembangan = perkembangan::find($item);
@@ -107,14 +121,14 @@ class perkembangans extends BaseController
             $data = [
                 'status' => 'Success',
                 'message' => 'Data Berhasil Di Hapus',
-                'data' => ''
+                'data' => '',
             ];
             return $data;
-        }else{
+        } else {
             $data = [
                 'status' => 'Error',
                 'message' => 'Akun Belum Login',
-                'data' => ''
+                'data' => '',
             ];
             return $data;
         }
