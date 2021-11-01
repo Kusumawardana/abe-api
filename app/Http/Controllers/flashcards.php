@@ -99,7 +99,7 @@ class flashcards extends BaseController
             $data = [
                 'status' => 'Success',
                 'message' => 'Data Dapat Di Hapus',
-                'data' => $read,
+                'data' => isset($read) ?: '',
             ];
             return $data;
         } else {
