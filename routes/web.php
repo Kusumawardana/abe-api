@@ -11,12 +11,12 @@
 | It is a breeze. Simply tell Lumen the URIs it should respond to
 | and give it the Closure to call when that URI is requested.
 |
-*/
+ */
 
 $router->get('/', 'login@index');
 
 $router->post('/login/proses', 'login@proseslogin');
-$router->get('/login/profile/{id}','login@profile');
+$router->get('/login/profile/{id}', 'login@profile');
 $router->get('/logout/{id}', 'login@logout');
 
 $router->get('/berita/read/{from}/{to}/{id}/', 'beritas@read');
@@ -55,8 +55,7 @@ $router->get('/perbedaan/comparison/{perbedaanId}/{id}', 'perbedaans@getComparis
 $router->post('/perbedaan/notify/{perbedaanId}/{comparisonId}/{id}', 'perbedaans@notifyAnswer');
 
 $router->get('/notifikasi/{id}', 'NotificationController@index');
-$router->patch('/notifikasi/{notification}/{id}', 'NotificationController@update');
+$router->get('/notifikasi/{notificationId}/{id}', 'NotificationController@show');
 
 $router->post('/feedback/create', 'feedbacks@create');
 $router->post('/dibagikan/create', 'dibagikans@create');
-

@@ -14,7 +14,7 @@ class NotificationController extends BaseController
         $validation = auth::where('id_user', $id)->count();
 
         if ($validation >= 1) {
-            $notifications = Notification::whereIn('id_user', [$id, null])->get();
+            $notifications = Notification::whereIn('id_user', [$id, null])->latest()->paginate();
             $data = [
                 'status' => 'Success',
                 'message' => 'Data Dapat Di Akses',
@@ -31,16 +31,16 @@ class NotificationController extends BaseController
         }
     }
 
-    public function update(Notification $notification, $id)
+    public function show($notificationId, $id)
     {
         $validation = auth::where('id_user', $id)->count();
+        $notification = Notification::find($notificationId);
 
         if ($validation >= 1) {
-            $notification->update(['dibaca' => 1]);
             $data = [
                 'status' => 'Success',
                 'message' => 'Data Berhasil Diubah',
-                'data' => '',
+                'data' => $notification,
             ];
             return $data;
         } else {
@@ -52,4 +52,26 @@ class NotificationController extends BaseController
             return $data;
         }
     }
+
+    // public function update(Notification $notification, $id)
+    // {
+    //     $validation = auth::where('id_user', $id)->count();
+
+    //     if ($validation >= 1) {
+    //         $notification->update(['dibaca' => 1]);
+    //         $data = [
+    //             'status' => 'Success',
+    //             'message' => 'Data Berhasil Diubah',
+    //             'data' => '',
+    //         ];
+    //         return $data;
+    //     } else {
+    //         $data = [
+    //             'status' => 'Error',
+    //             'message' => 'Akun Belum Login',
+    //             'data' => '',
+    //         ];
+    //         return $data;
+    //     }
+    // }
 }
